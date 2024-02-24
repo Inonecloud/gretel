@@ -1,0 +1,16 @@
+bot:
+  token: ${BOT_TOKEN}
+  name: "Gretel 2.0"
+
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      username: user
+      password: pass
+      database: gretel
+      port: 27017
+      host: localhost
+
+encryption:
+  secretKey: ${SECRET_KEY}
