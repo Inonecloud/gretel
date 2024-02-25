@@ -4,13 +4,8 @@ import com.raw.gretel.domain.*
 import org.telegram.abilitybots.api.db.DBContext
 import org.telegram.abilitybots.api.objects.MessageContext
 import org.telegram.abilitybots.api.sender.SilentSender
-import org.telegram.telegrambots.meta.api.methods.groupadministration.ApproveChatJoinRequest
-import org.telegram.telegrambots.meta.api.methods.groupadministration.BanChatMember
-import org.telegram.telegrambots.meta.api.methods.groupadministration.CreateChatInviteLink
-import org.telegram.telegrambots.meta.api.methods.groupadministration.DeclineChatJoinRequest
-import org.telegram.telegrambots.meta.api.methods.groupadministration.UnbanChatMember
+import org.telegram.telegrambots.meta.api.methods.groupadministration.*
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import java.time.Duration
 
 
 class ResponseHandler(
@@ -44,7 +39,6 @@ class ResponseHandler(
         user?.username?.let { userService.changeStatusUser(it, UserState.HIDE) }
         val ban = BanChatMember()
         ban.userId = userId
-        //ban.forTimePeriodDuration(Duration.ofSeconds(1))
         val unbanChatMember = UnbanChatMember()
         unbanChatMember.userId = userId
         user?.groups?.forEach {

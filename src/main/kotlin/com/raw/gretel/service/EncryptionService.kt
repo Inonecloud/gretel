@@ -17,7 +17,8 @@ class EncryptionService(
 ) {
 
     companion object {
-        const val encryptionAlgorithm = "AES/CBC/PKCS5Padding"
+        const val algorithm = "AES/CBC/PKCS5Padding"
+      //  const val algorithm = "AES/GCM/NoPadding"
     }
 
     fun getIv(encryptedId: String): IvParameterSpec {
@@ -30,7 +31,7 @@ class EncryptionService(
         return ivRepository.findAll()
             .first { decrypt(it.id, IvParameterSpec(Base64.getDecoder().decode(it.iv))) == userId }
     }
-//[62, -81, 92, -77, 7, 74, -83, 26, 7, -64, 37, 19, -81, -83, 76, 126]
+
     fun save(userId: String): Iv {
         val generatedIv = generateIv()
         val encryptedId = encrypt(userId, generatedIv)
@@ -38,14 +39,14 @@ class EncryptionService(
     }
 
     fun encrypt(input: String, iv: IvParameterSpec): String {
-        val cipher = Cipher.getInstance(encryptionAlgorithm)
+        val cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv)
         val cipherText = cipher.doFinal(input.toByteArray())
         return Base64.getEncoder().encodeToString(cipherText)
     }
 
     fun decrypt(cipherText: String, iv: IvParameterSpec): String {
-        val cipher = Cipher.getInstance(encryptionAlgorithm)
+        val cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.DECRYPT_MODE, secretKey, iv)
         val plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText))
         return String(plainText)

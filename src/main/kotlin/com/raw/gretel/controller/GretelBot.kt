@@ -1,6 +1,9 @@
-package com.raw.gretel.service
+package com.raw.gretel.controller
 
 import com.raw.gretel.domain.START_DESCRIPTION
+import com.raw.gretel.service.EncryptionService
+import com.raw.gretel.service.ResponseHandler
+import com.raw.gretel.service.UserService
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 import org.telegram.abilitybots.api.bot.AbilityBot
@@ -57,7 +60,7 @@ class GretelBot(
             .name("hide")
             .info("")
             .locality(Locality.GROUP)
-            .privacy(Privacy.PUBLIC)
+            .privacy(Privacy.GROUP_ADMIN)
             .action { ctx ->
                 responseHandler.hideByDemand(ctx.arguments()[0])
             }
