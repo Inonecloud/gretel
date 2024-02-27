@@ -4,8 +4,6 @@ import com.raw.gretel.domain.User
 import com.raw.gretel.domain.UserState
 import com.raw.gretel.repository.UserRepository
 import org.springframework.stereotype.Service
-import java.util.*
-import javax.crypto.spec.IvParameterSpec
 
 
 @Service
@@ -15,9 +13,10 @@ class UserService(
 ) {
 
     fun saveUser(userId: Long, username: String, chatId: Long) {
-        // TODO: handle if user already exists
-        userRepository.findById(userId.toString()).ifPresent {}
-
+        val maybeUser = userRepository.findById(userId.toString())
+        if (maybeUser.isPresent) {
+            return
+        }
         val encryptedId = encryptionService.save(userId.toString())
         val user = User(encryptedId.id, username, chatId, UserState.ACTIVE)
         userRepository.save(user)

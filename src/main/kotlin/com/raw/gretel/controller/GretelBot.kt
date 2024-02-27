@@ -4,6 +4,7 @@ import com.raw.gretel.domain.START_DESCRIPTION
 import com.raw.gretel.service.EncryptionService
 import com.raw.gretel.service.ResponseHandler
 import com.raw.gretel.service.UserService
+import io.micrometer.core.annotation.Counted
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 import org.telegram.abilitybots.api.bot.AbilityBot
@@ -23,30 +24,33 @@ class GretelBot(
         return 1L
     }
 
+    @Counted
     fun startBot(): Ability {
         return Ability.builder()
             .name("start")
-            .info(START_DESCRIPTION)
+            .info("Authenticate in bot")
             .locality(Locality.USER)
             .privacy(Privacy.PUBLIC)
             .action { ctx -> responseHandler.replyToStart(ctx) }
             .build()
     }
 
+    @Counted
     fun checkInInBot(): Ability {
         return Ability.builder()
             .name("checkin")
-            .info("")
+            .info("Add chat to bot")
             .locality(Locality.GROUP)
             .privacy(Privacy.PUBLIC)
             .action { ctx -> responseHandler.checkIn(ctx) }
             .build()
     }
 
+    @Counted
     fun sos(): Ability {
         return Ability.builder()
             .name("sos")
-            .info("")
+            .info("Delete user from all chats followed by bot. Initiate by user")
             .locality(Locality.ALL)
             .privacy(Privacy.PUBLIC)
             .action { ctx ->
@@ -55,10 +59,11 @@ class GretelBot(
             .build()
     }
 
+    @Counted
     fun hide(): Ability{
         return Ability.builder()
             .name("hide")
-            .info("")
+            .info("Delete user from all chats followed by bot. Initiated by chat admin")
             .locality(Locality.GROUP)
             .privacy(Privacy.GROUP_ADMIN)
             .action { ctx ->
@@ -67,10 +72,11 @@ class GretelBot(
             .build()
     }
 
+    @Counted
     fun invite():Ability {
         return Ability.builder()
             .name("invite")
-            .info("")
+            .info("Send invitation link to user")
             .locality(Locality.GROUP)
             .privacy(Privacy.GROUP_ADMIN)
             .action { ctx ->
@@ -89,10 +95,11 @@ class GretelBot(
             .build()
     }
 
+    @Counted
     fun forgetMe(): Ability {
         return Ability.builder()
             .name("forget")
-            .info("")
+            .info("Delete user from bot")
             .locality(Locality.USER)
             .privacy(Privacy.PUBLIC)
             .action { ctx -> responseHandler.forgetMe(ctx.user().id) }
