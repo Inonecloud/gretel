@@ -68,7 +68,7 @@ class ResponseHandler(
 
         val inviteLink = CreateChatInviteLink.builder()
             .chatId(chatId)
-            .expireDate((System.currentTimeMillis() + 3_600_000).toInt())
+            .expireDate((System.currentTimeMillis() / 1000 + 3_600).toInt())
             .createsJoinRequest(true)
             .name("Return back")
             .build()
