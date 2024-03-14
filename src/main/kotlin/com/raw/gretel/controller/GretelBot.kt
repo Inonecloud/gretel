@@ -1,10 +1,11 @@
 package com.raw.gretel.controller
 
-import com.raw.gretel.domain.START_DESCRIPTION
 import com.raw.gretel.service.EncryptionService
 import com.raw.gretel.service.ResponseHandler
 import com.raw.gretel.service.UserService
 import io.micrometer.core.annotation.Counted
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 import org.telegram.abilitybots.api.bot.AbilityBot
@@ -17,14 +18,15 @@ import org.telegram.abilitybots.api.objects.Privacy
 class GretelBot(
     env: Environment,
     userService: UserService,
-    encryptionService: EncryptionService
+    private val meterRegistry: MeterRegistry
 ) : AbilityBot(env.getProperty("bot.token"), env.getProperty("bot.name")) {
-    private val responseHandler: ResponseHandler = ResponseHandler(silent, db, userService, encryptionService)
+    private val responseHandler: ResponseHandler = ResponseHandler(silent, db, userService, meterRegistry)
+
+
     override fun creatorId(): Long {
         return 1L
     }
 
-    @Counted
     fun startBot(): Ability {
         return Ability.builder()
             .name("start")
@@ -60,7 +62,7 @@ class GretelBot(
     }
 
     @Counted
-    fun hide(): Ability{
+    fun hide(): Ability {
         return Ability.builder()
             .name("hide")
             .info("Delete user from all chats followed by bot. Initiated by chat admin")
@@ -73,7 +75,7 @@ class GretelBot(
     }
 
     @Counted
-    fun invite():Ability {
+    fun invite(): Ability {
         return Ability.builder()
             .name("invite")
             .info("Send invitation link to user")
@@ -85,13 +87,13 @@ class GretelBot(
             .build()
     }
 
-    fun approveJoinRequest():Ability{
+    fun approveJoinRequest(): Ability {
         return Ability.builder()
             .name(DEFAULT)
             .flag(Flag.CHAT_JOIN_REQUEST)
             .privacy(Privacy.PUBLIC)
             .locality(Locality.ALL)
-            .action { ctx -> responseHandler.reviewJoinRequest(ctx.chatId(), ctx.user().id)}
+            .action { ctx -> responseHandler.reviewJoinRequest(ctx.chatId(), ctx.user().id) }
             .build()
     }
 

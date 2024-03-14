@@ -13,7 +13,8 @@ class UserService(
 ) {
 
     fun saveUser(userId: Long, username: String, chatId: Long) {
-        val maybeUser = userRepository.findById(userId.toString())
+        val ecryptedId = encryptionService.findIv(userId.toString()).id
+        val maybeUser = userRepository.findById(ecryptedId)
         if (maybeUser.isPresent) {
             return
         }

@@ -14,3 +14,20 @@ spring:
 
 encryption:
   secretKey: ${SECRET_KEY}
+
+management:
+  endpoints:
+    web:
+     exposure:
+       include: "*"
+  endpoint:
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+      enabled: true
+

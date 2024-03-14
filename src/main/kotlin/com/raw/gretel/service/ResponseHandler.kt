@@ -1,6 +1,8 @@
 package com.raw.gretel.service
 
 import com.raw.gretel.domain.*
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.MeterRegistry
 import org.telegram.abilitybots.api.db.DBContext
 import org.telegram.abilitybots.api.objects.MessageContext
 import org.telegram.abilitybots.api.sender.SilentSender
@@ -12,7 +14,8 @@ class ResponseHandler(
     val sender: SilentSender,
     val db: DBContext,
     val userService: UserService,
-    val encryptionService: EncryptionService
+    private val meterRegistry: MeterRegistry
+
 ) {
     private val chatStates: Map<Long, UserState> = db.getMap(CHAT_STATES)
 
@@ -22,6 +25,10 @@ class ResponseHandler(
         message.text = START_TEXT
         userService.saveUser(ctx.user().id, "@${ctx.user().userName}", ctx.chatId())
         sender.execute(message)
+        val counter = Counter.builder("bot_started_total")
+            .description("A number of bot starts")
+            .register(meterRegistry)
+        counter.increment()
     }
 
     fun checkIn(ctx: MessageContext) {
@@ -32,6 +39,11 @@ class ResponseHandler(
             sender.execute(message)
         }
         userService.addGroupToUser(ctx.user().id, ctx.user().userName, ctx.chatId())
+        val counter = Counter.builder("check_in_executed_total")
+            .tag("version", "v1")
+            .description("A number of checkin command executions")
+            .register(meterRegistry)
+        counter.increment()
     }
 
     fun sos(userId: Long) {
@@ -47,15 +59,34 @@ class ResponseHandler(
             sender.execute(ban)
             sender.execute(unbanChatMember)
         }
-        val message = SendMessage()
-        message.chatId = user?.chatId.toString()
-        message.text = HIDDEN_USER
-        sender.execute(message)
+        user?.groups?.forEach {
+            val message = SendMessage()
+            message.chatId = it
+            message.text = "$HIDDEN_USER ${user.username}"
+            sender.execute(message)
+        }
+        val counter = Counter.builder("sos_executed_total")
+            .tag("version", "v1")
+            .description("A number of sos command executions")
+            .register(meterRegistry)
+        counter.increment()
     }
 
-    fun hideByDemand(username: String){
+    fun hideByDemand(username: String) {
         val user = userService.getUserByUsername(username)
         user?.userId?.let { sos(it.toLong()) }
+        user?.groups?.forEach {
+            val message = SendMessage()
+            message.chatId = it
+            message.text = "$HIDDEN_USER ${user.username}"
+            sender.execute(message)
+        }
+
+        val counter = Counter.builder("hide_executed_total")
+            .tag("version", "v1")
+            .description("A number of hide command executions")
+            .register(meterRegistry)
+        counter.increment()
     }
 
     fun invite(username: String, chatId: Long) {
@@ -79,6 +110,12 @@ class ResponseHandler(
                 this.chatId = user.chatId.toString()
             }
             sender.execute(message)
+
+            val counter = Counter.builder("invite_executed_total")
+                .tag("version", "v1")
+                .description("A number of invite command executions")
+                .register(meterRegistry)
+            counter.increment()
         }
     }
 
