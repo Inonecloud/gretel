@@ -1,10 +1,7 @@
 package com.raw.gretel.controller
 
-import com.raw.gretel.service.EncryptionService
 import com.raw.gretel.service.ResponseHandler
 import com.raw.gretel.service.UserService
-import io.micrometer.core.annotation.Counted
-import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
@@ -37,7 +34,6 @@ class GretelBot(
             .build()
     }
 
-    @Counted
     fun checkInInBot(): Ability {
         return Ability.builder()
             .name("checkin")
@@ -48,7 +44,6 @@ class GretelBot(
             .build()
     }
 
-    @Counted
     fun sos(): Ability {
         return Ability.builder()
             .name("sos")
@@ -61,7 +56,7 @@ class GretelBot(
             .build()
     }
 
-    @Counted
+
     fun hide(): Ability {
         return Ability.builder()
             .name("hide")
@@ -74,7 +69,6 @@ class GretelBot(
             .build()
     }
 
-    @Counted
     fun invite(): Ability {
         return Ability.builder()
             .name("invite")
@@ -97,7 +91,6 @@ class GretelBot(
             .build()
     }
 
-    @Counted
     fun forgetMe(): Ability {
         return Ability.builder()
             .name("forget")
